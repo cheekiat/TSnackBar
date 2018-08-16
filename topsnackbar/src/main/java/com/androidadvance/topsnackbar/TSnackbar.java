@@ -46,6 +46,8 @@ import java.lang.annotation.RetentionPolicy;
 
 public final class TSnackbar {
 
+    static Integer paddingVertical;
+    Integer paddingHorizontal;
 
     public static abstract class Callback {
 
@@ -138,12 +140,25 @@ public final class TSnackbar {
         TSnackbar snackbar = new TSnackbar(findSuitableParent(view));
         snackbar.setText(text);
         snackbar.setDuration(duration);
+        paddingVertical = null;
         return snackbar;
     }
 
-    
+    @NonNull
+    public static TSnackbar make(@NonNull View view, @NonNull CharSequence text,@NonNull Integer viewPaddingVertical,
+                                 @Duration int duration) {
+        TSnackbar snackbar = new TSnackbar(findSuitableParent(view));
+        snackbar.setText(text);
+        snackbar.setDuration(duration);
+        paddingVertical = viewPaddingVertical;
+        return snackbar;
+    }
+
+
+
     @NonNull
     public static TSnackbar make(@NonNull View view, @StringRes int resId, @Duration int duration) {
+        paddingVertical = null;
         return make(view, view.getResources()
                 .getText(resId), duration);
     }
@@ -686,10 +701,16 @@ public final class TSnackbar {
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             }
 
-            final int multiLineVPadding = getResources().getDimensionPixelSize(
+             int multiLineVPadding = getResources().getDimensionPixelSize(
                     R.dimen.design_snackbar_padding_vertical_2lines);
-            final int singleLineVPadding = getResources().getDimensionPixelSize(
+             int singleLineVPadding = getResources().getDimensionPixelSize(
                     R.dimen.design_snackbar_padding_vertical);
+
+            if(paddingVertical != null){
+                singleLineVPadding = paddingVertical;
+                multiLineVPadding = paddingVertical;
+            }
+
             final boolean isMultiLine = mMessageView.getLayout()
                     .getLineCount() > 1;
 
